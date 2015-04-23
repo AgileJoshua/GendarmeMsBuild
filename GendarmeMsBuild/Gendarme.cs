@@ -169,7 +169,8 @@ namespace GendarmeMsBuild
                 return true;
             }
             finally
-            {                
+            {    
+
                 if (isUsingTempFile)
                     try { File.Delete(thisOutputFile); }
                     catch { /* do nothing */}               
@@ -221,6 +222,10 @@ namespace GendarmeMsBuild
         private void CreateVisualStudioOutput(string outputFile)
         {
             var xdoc = XDocument.Load(outputFile);
+            xdoc.AddFirst(new XProcessingInstruction(
+ "xml-stylesheet",
+ "type='text/xsl' href='..\\..\\gendarme.xsl'"));
+            xdoc.Save();
             var q = from defect in xdoc.Root.Descendants("defect")
                     let rule = defect.Parent.Parent
                     let target = defect.Parent
